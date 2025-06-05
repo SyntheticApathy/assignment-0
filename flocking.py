@@ -98,14 +98,14 @@ class FlockingAgent(Agent):
 Simulation(
     FlockingConfig(
         image_rotation=True,
-        movement_speed=1,
-        radius=50,
-        alignment_weight=1.0,
-        cohesion_weight=1.0,
+        movement_speed=1.5,
+        radius=100,
+        alignment_weight=1.2,
+        cohesion_weight=0.8,
         separation_weight=1.5,
-        delta_time=3,
+        delta_time=2,
         mass=20,
-        max_vel=30
+        max_vel=25
     )
 ).batch_spawn_agents(
     50,
