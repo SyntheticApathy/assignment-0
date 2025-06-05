@@ -4,6 +4,7 @@ from statistics import fmean
 from vi import Agent, Config, Simulation
 import os
 import csv
+import random
 
 
 @dataclass
@@ -13,7 +14,7 @@ class FlockingConfig(Config):
     separation_weight: float = 1
     delta_time: float = 3
     mass: int = 20
-    max_vel: int = 30
+    max_vel: int = 1
 
     def weights(self) -> tuple[float, float, float]:
         return self.alignment_weight, self.cohesion_weight, self.separation_weight
@@ -73,7 +74,8 @@ class FlockingAgent(Agent):
         for agent, _ in neighbors:
             alignment += agent.move
             cohesion += agent.pos
-            separation += self.pos - agent.pos
+            if self.pos.distance_to(agent.pos) < 25:
+                separation += self.pos - agent.pos
 
         one_by_N = 1 / len(neighbors)
 
@@ -85,6 +87,9 @@ class FlockingAgent(Agent):
         w_align, w_coh, w_sep = self.get_weigths()
 
         total_force = (alignment * w_align + cohesion * w_coh + separation * w_sep) / self.config.mass
+        if self.move.length() < 0.3:
+            total_force += pygame.math.Vector2(random.uniform(-1, 1), random.uniform(-1, 1)) * 0.2
+
         self.move += total_force
 
         if self.move.length_squared() > 0:
@@ -98,14 +103,14 @@ class FlockingAgent(Agent):
 Simulation(
     FlockingConfig(
         image_rotation=True,
-        movement_speed=1.5,
-        radius=100,
-        alignment_weight=1.2,
-        cohesion_weight=0.8,
+        movement_speed=1,
+        radius=50,
+        alignment_weight=2,
+        cohesion_weight=0.1,
         separation_weight=1.5,
-        delta_time=2,
-        mass=20,
-        max_vel=25
+        delta_time=3,
+        mass=15,
+        max_vel=2
     )
 ).batch_spawn_agents(
     50,
